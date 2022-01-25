@@ -1,5 +1,5 @@
-// import {squareLeft, triangleLeft, leftShapeList} from './www/dextGameShapeDataBaseLeft.js';
-// import {squareRight, triangleRight, rightShapeList} from './www/dextGameShapeDataBaseRight.js';
+// This sets up the whole game. creating a config variable and its different
+// attributes.
 var config = {
   type: Phaser.AUTO,
   width: 800,
@@ -11,24 +11,24 @@ var config = {
     height: 600
   },
   backgroundColor: 0x000000,
-  scene: [dextgameWelcomeScreen, dextgameRulesScreen, dextgamePauseScreen, dextgameGameScreen, dextgameScoreScreen, dextgameLoseScreen, dextgameWinScreen]
+  scene: [dextgameWelcomeScreen, dextgameRulesScreen, dextgameGameScreen, dextgameScoreScreen, dextgameLoseScreen, dextgameWinScreen, dextgameRestart]
 };
 
+//the following lines create global variables that are used throughout the whole
+// game, with seperate scnes needing access to them
+
 var text;
-var text2;
-var timeText1;
-var timeText2;
-var timer1;
-var timer2;
+var timeTextLeft;
+var timeTextRight;
+var accumulatedLeftTime = 0;
+var accumulatedRightTime = 0;
 
 var score;
-var avgScore;
+var cumulativeScore=0;
 var total;
 var avg;
 var perc;
 var diff;
-
-// var particles;
 
 var graphics;
 var timeoutID;
@@ -36,6 +36,7 @@ var touchCounter;
 
 var leftShape;
 var rightShape;
+var completedShapes = 0;
 
 var userLevel=1;
 var sceneChangeCondition;
@@ -44,175 +45,18 @@ var winCondition = false;
 var continueButton;
 var rulesButton;
 var scoreText;
-var cumulativeScore=0;
 
-
+// creates the actual game using the configuration attribute from above
 var game = new Phaser.Game(config);
 
-window.addEventListener("orientationchange", function{
-  alert(screen.orientation);
-}, false);
-
-// game.scale.forceOrientation(true, false);
-// game.scale.lockOrientation(true, false);
-// game.scale.on('orientationchange', function(orientation){
-//   if(game.scale.isLandscape){
-//     document.getElementById("turn").style.display="block";
-//   }
-// });
-
-
-//
-// function handleCorrect(){
-//   if(!game.device.desktop){
-//     if(firstRunLandscape){
-//       gameRatio = window.innerWidth/window.innerHeight;
-//       game.width = Math.ceil(640*gameRatio);
-//       game.height = 640;
-//       game.renderer.resize(game.width,game.height);
-//     }
-//     document.getElementById("turn").style.display="none";
-//   }
-// }
-
-
-
-// game.scale.lockOrientation('landscape');
-
-// window.addEventListener('resize', () => {
-//     game.resize(window.innerWidth, window.innerHeight);
-// });
-
-
-// function resize (gameSize, baseSize, displaySize, resolution)
-// {
-//     var width = gameSize.width;
-//     var height = gameSize.height;
-//
-//     this.cameras.resize(width, height);
-// }
-
-
-// function resize() {
-//     const canvas = this.canvas;
-//     if (canvas) {
-//         const w = window.innerWidth;
-//         const h = window.innerHeight;
-//         const scale = Math.min(w / this.BaseWidth, h / this.BaseHeight);
-//
-//         canvas.setAttribute("style",
-//             " -ms-transform: scale(" + scale + "); -webkit-transform: scale3d(" + scale + ", 1);" +
-//             " -moz-transform: scale(" + scale + "); -o-transform: scale(" + scale + "); transform: scale(" + scale + ");" +
-//             " transform-origin: top left;",
-//         );
-//
-//         const width = w / scale;
-//         const height = h / scale;
-//         this.scale.resize(width, height);
-//     }
-// }
-// function BaseWidth() {
-//     return Number(this.config.width);
-// }
-// function BaseHeight() {
-//     return Number(this.config.height);
-// }
-// function BaseRatio() {
-//     return this.BaseWidth / this.BaseHeight;
-// }
-
-
-
-
-// this.gameScale.setMode('resize-and-fit');
-
-
-
-
-
-
-
-
-//
-
-// function resize (gameSize, baseSize, displaySize, resolution)
-// {
-//     var width = gameSize.width;
-//     var height = gameSize.height;
-//
-//     this.cameras.resize(width, height);
-// }
-
-
-// function resize() {
-//         var canvas = game.canvas, width = window.innerWidth, height = window.innerHeight;
-//         var wratio = width / height, ratio = canvas.width / canvas.height;
-//
-//         if (wratio < ratio) {
-//             canvas.style.width = width + "px";
-//             canvas.style.height = (width / ratio) + "px";
-//         } else {
-//             canvas.style.width = (height * ratio) + "px";
-//             canvas.style.height = height + "px";
-//         }
-//     }
-
-
-
-
-//     const squareRight = {
-//       name: "square",
-//       shapePoints: [505, 250, 626.25, 250, 626.25, 371.25, 505, 371.25],
-//       draw: function(){
-//         graphics.lineStyle(5, 0xFF000, 1.0);
-//         graphics.strokeRect(505, 250, 121.25, 121.25);
-//       }
-//     };
-//     const triangleRight = {
-//       name: "triangle",
-//       shapePoints: [400, 371.25, 470, 250, 540, 371.25],
-//       draw: function() {
-//         graphics.lineStyle(5, 0xFF000, 1.0);
-//         graphics.strokeTriangle(400, 371.25, 470, 250, 540, 371.25);
-//       }
-//     };
-//
-// const rightShapeList = [squareRight, triangleRight];
-//
-//
-//
-// const squareLeft = {
-//   name: "square",
-//   shapePoints: [105, 250, 226.25, 250, 226.25, 371.25, 105, 371.25],
-//   draw: function(){
-//     graphics.lineStyle(5, 0x0000FF, 1.0);
-//     graphics.strokeRect(105, 250, 121.25, 121.25);
-//   }
-// };
-// const triangleLeft = {
-//   name: "triangle",
-//   shapePoints: [100, 371.25, 170, 250, 240, 371.25],
-//   draw: function() {
-//     graphics.lineStyle(5, 0x0000FF, 1.0);
-//     graphics.strokeTriangle(100, 371.25, 170, 250, 240, 371.25);
-//   }
-// };
-//
-// const leftShapeList = [squareLeft, triangleLeft];
-
-
-
-
-
-
-
-
-
-
-
-// graphics.lineStyle(5, 0x0000FF, 1.0);
-// graphics.strokeRect(105, 250, 121.25, 121.25);
-// graphics.strokeTriangle(400, 371.25, 470, 250, 540, 371.25);
-
-// var squarePoints = [105, 250, 226.25, 250, 226.25, 371.25, 105, 371.25];
-// var trianglePoints = [400, 371.25, 470, 250, 540, 371.25];
+//global function that checks and make sure the user is in Landscape View
+//if the user goes into portrait mode, they change the games design on which
+//whites out the screen, and places the image that instructs the user to go into
+//landscape mode
+function checkOriention (width, height){
+  if (window.innerWidth < window.innerHeight){
+    document.getElementById("turn").style.display="block";
+  }else if (window.innerWidth > window.innerHeight){
+    document.getElementById("turn").style.display="none";
+  }
+}
